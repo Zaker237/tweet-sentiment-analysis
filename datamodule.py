@@ -24,11 +24,12 @@ class TweetDataset(Dataset):
         target = self.targets[index]
         encoding = self.tokenizer.encode_plus(
             inputs,
-            add_special_token=True,
-            max_lenght=self.max_len,
+            add_special_tokens=True,
+            max_length=self.max_length,
+            padding = 'max_length',
             truncation=True,
             return_token_type_ids=False,
-            pad_to_max_lenght=True,
+            pad_to_max_length=True,
             return_attention_mask=True,
             return_tensors="pt"
         )
@@ -49,6 +50,8 @@ class TweetDataModule(pl.LightningDataModule):
         self.max_length = max_length
         self.batch_size = batch_size
 
+        self.prepare_data()
+
     def prepare_data(self) -> None:
         train_d, test_d, val_d = load_data(self.data_path)
         self.train_dataset = TweetDataset(train_d, self.tokenizer, self.max_length)
@@ -57,9 +60,15 @@ class TweetDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True)
-    
+
     def test_dataloader(self):
         return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=True)
 
     def val_dataloader(self):
         return DataLoader(self.validation_dataset, batch_size=self.batch_size, shuffle=True)
+
+
+if __name__ == "__main__":
+    datas = TweetDataModule(Path("./clean_data.csv"), "bert-base-cased")
+    for data in datas.test_dataset:
+        print(data)
