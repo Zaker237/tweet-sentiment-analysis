@@ -64,21 +64,21 @@ def load_data(path):
     neg_train_len = int(len(neg_data)*0.8)  # length of negative train data
     neu_train_len = int(len(neu_data)*0.8)  # length of neutral train data
 
-    pos_test_len  = int((len(pos_data) - pos_train_len) / 2)
-    neg_test_len  = int((len(neg_data) - neg_train_len) / 2)
-    neu_test_len  = int((len(neu_data) - neu_train_len) / 2)
+    pos_test_len  = int((len(pos_data)*0.1))
+    neg_test_len  = int((len(neg_data)*0.1))
+    neu_test_len  = int((len(neu_data)*0.1))
 
     pos_train = pos_data[:pos_train_len]
-    neg_train = pos_data[:neg_train_len]
-    neu_train = pos_data[:neu_train_len]
+    neg_train = neg_data[:neg_train_len]
+    neu_train = neu_data[:neu_train_len]
 
-    pos_test = pos_data[pos_train_len:pos_test_len]
-    neg_test = pos_data[neg_train_len:neg_test_len]
-    neu_test = pos_data[neu_train_len:neu_test_len]
+    pos_test = pos_data[pos_train_len:pos_train_len + pos_test_len]
+    neg_test = neg_data[neg_train_len:neg_train_len + neg_test_len]
+    neu_test = neu_data[neu_train_len:neu_train_len + neu_test_len]
 
     pos_val = pos_data[pos_train_len + pos_test_len:]
-    neg_val = pos_data[neg_train_len + neg_test_len:]
-    neu_val = pos_data[neu_train_len + neu_test_len:]
+    neg_val = neg_data[neg_train_len + neg_test_len:]
+    neu_val = neu_data[neu_train_len + neu_test_len:]
 
     train_data = pos_train + neg_train + neu_train
     test_data = pos_test + neg_test + neu_test
