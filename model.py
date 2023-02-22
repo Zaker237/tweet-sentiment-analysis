@@ -6,10 +6,10 @@ from transformers import BertModel, AdamW
 
 
 class SentimentAnalysis(pl.LightningModule):
-    def __init__ (self, model: str, num_classes:int = 3, lr: float = 1e-3):
+    def __init__ (self, bert_model: str, num_classes:int = 3, lr: float = 1e-3):
         super(SentimentAnalysis, self).__init__()
         self.lr = lr
-        self.bert = BertModel.from_pretrained(model)
+        self.bert = BertModel.from_pretrained(bert_model)
         self.dropout = nn.Dropout(p=0.3)
         self.linear = nn.Linear(self.bert.config.hidden_size, num_classes)
         self.sofmax = nn.Softmax(dim=1)

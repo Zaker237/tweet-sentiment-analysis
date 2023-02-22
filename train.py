@@ -21,7 +21,7 @@ data = TweetDataModule(
     data_path=DATA_PATH,
     bert_model=BERT_MODEL,
     max_length=MAX_LENGTH,
-    batch_size=1
+    batch_size=16
 )
 
 trainer = pl.Trainer(max_epochs=NUM_EPOCHS)
