@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# pytorch lightning
+lightning_logs
+
+# models
+trained_model
