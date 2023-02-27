@@ -8,7 +8,7 @@ DATA_PATH = Path("./clean_data.csv")
 BERT_MODEL = "bert-base-cased"
 LEARNING_RATE = 1e-3
 MAX_LENGTH = 240  # max length of a tweet
-NUM_EPOCHS = 3
+NUM_EPOCHS = 10
 
 
 cls = SentimentAnalysis(
@@ -24,7 +24,7 @@ data = TweetDataModule(
     batch_size=4
 )
 
-trainer = pl.Trainer(max_epochs=NUM_EPOCHS)
+trainer = pl.Trainer(accelerator="gpu", max_epochs=NUM_EPOCHS)
 trainer.fit(cls, data)
 cls.eval()
 trainer.test(data)

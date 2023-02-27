@@ -1,6 +1,5 @@
 import torch
 from torch import nn
-from torch.nn import functional as F
 import pytorch_lightning as pl
 from transformers import BertModel, AdamW
 
@@ -13,14 +12,13 @@ class SentimentAnalysis(pl.LightningModule):
         self.dropout = nn.Dropout(p=0.3)
         self.linear = nn.Linear(self.bert.config.hidden_size, num_classes)
         self.sofmax = nn.Softmax(dim=1)
-
         self.loss_func = nn.CrossEntropyLoss()
 
     def forward(self, input_ids, attention_mask):
         temp = self.bert(input_ids, attention_mask)
         out = self.dropout(temp[1])
         out = self.linear(out)
-        return out
+        return self.sofmax(out)
     
     def configure_optimizers(self):
         optimizer = AdamW(params=self.parameters(), lr=self.lr)
@@ -31,7 +29,7 @@ class SentimentAnalysis(pl.LightningModule):
         attention_mask = train_batch["attention_mask"]
         target = train_batch["target"]
         out = self.forward(input_ids, attention_mask)
-        # _, pred_class = torch.max(out, dim=1)
+        #_, pred_class = torch.max(out, dim=1)
         loss = self.loss_func(out, target)
         self.log('train_loss', loss)
         return loss
@@ -41,7 +39,8 @@ class SentimentAnalysis(pl.LightningModule):
         attention_mask = val_batch["attention_mask"]
         target = val_batch["target"]
         out = self.forward(input_ids, attention_mask)
-        # _, pred_class = torch.max(out, dim=1)
+        #_, pred_class = torch.max(out, dim=1)
+        #pred_class = torch.tensor(pred_class, dtype=torch.long)
         loss = self.loss_func(out, target)
         self.log('val_loss', loss)
 
