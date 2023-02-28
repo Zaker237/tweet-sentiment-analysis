@@ -47,17 +47,17 @@ def load_data(path):
             if sentiment == "Positive":
                 pos_data.append({
                     "text": text,
-                    "target": 2
+                    "target": [0, 0, 1]
                 })
             elif sentiment == "Negative":
                 neg_data.append({
                     "text": text,
-                    "target": 0
+                    "target": [1, 0, 0]
                 })
             elif sentiment == "Neutral":
                 neu_data.append({
                     "text": text,
-                    "target": 1
+                    "target": [0, 1, 0]
                 })
 
     pos_train_len = int(len(pos_data)*0.8)  # length of positive train data
