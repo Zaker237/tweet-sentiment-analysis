@@ -38,7 +38,7 @@ class TweetDataset(Dataset):
             "inputs": inputs,
             "input_ids": encoding["input_ids"].flatten(),
             "attention_mask": encoding["attention_mask"].flatten(),
-            "target": torch.tensor(target, dtype=torch.long)
+            "target": torch.tensor(target, dtype=torch.float)
         }
 
 
