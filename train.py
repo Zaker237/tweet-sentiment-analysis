@@ -1,8 +1,12 @@
 import torch
 import pytorch_lightning as pl
+from pytorch_lightning.loggers import TensorBoardLogger
 from model import SentimentAnalysis
 from datamodule import TweetDataModule
 from pathlib import Path
+
+torch.set_float32_matmul_precision("medium")
+
 
 DATA_PATH = Path("./clean_data.csv")
 BERT_MODEL = "bert-base-cased"
@@ -21,11 +25,20 @@ data = TweetDataModule(
     data_path=DATA_PATH,
     bert_model=BERT_MODEL,
     max_length=MAX_LENGTH,
-    batch_size=4
+    batch_size=4,
+    num_workers=12
 )
 
-trainer = pl.Trainer(accelerator="gpu", max_epochs=NUM_EPOCHS)
-trainer.fit(cls, data)
-cls.eval()
-trainer.test(data)
+logger = TensorBoardLogger("tb_logs", name="tsa_model")
+
+trainer = pl.Trainer(
+    logger=logger,
+    accelerator="gpu",
+    min_epochs=1,
+    max_epochs=NUM_EPOCHS,
+    precision=16
+)
+trainer.fit(cls, datamodule=data)
+trainer.validate(cls, datamodule=data)
+trainer.test(cls, datamodule=data)
 trainer.save_checkpoint("trained_model", weights_only=True)

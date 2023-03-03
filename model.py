@@ -40,7 +40,6 @@ class SentimentAnalysis(pl.LightningModule):
         target = val_batch["target"]
         out = self.forward(input_ids, attention_mask)
         #_, pred_class = torch.max(out, dim=1)
-        #pred_class = torch.tensor(pred_class, dtype=torch.long)
         loss = self.loss_func(out, target)
         self.log('val_loss', loss)
 
