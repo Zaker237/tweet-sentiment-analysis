@@ -43,29 +43,48 @@ class TweetDataset(Dataset):
 
 
 class TweetDataModule(pl.LightningDataModule):
-    def __init__(self, data_path: Path, bert_model: str, max_length: int=240, batch_size: int = 1):
+    def __init__(self, data_path: Path, bert_model: str, max_length: int=240, batch_size: int = 1, num_workers=12):
         super(TweetDataModule, self).__init__()
         self.data_path = data_path
         self.tokenizer = BertTokenizer.from_pretrained(bert_model)
         self.max_length = max_length
         self.batch_size = batch_size
+        self.num_workers = num_workers
 
-        self.prepare_data()
-
-    def prepare_data(self) -> None:
+    def prepare_data(self):
         train_d, test_d, val_d = load_data(self.data_path)
-        self.train_dataset = TweetDataset(train_d, self.tokenizer, self.max_length)
-        self.test_dataset = TweetDataset(test_d, self.tokenizer, self.max_length)
-        self.validation_dataset = TweetDataset(val_d, self.tokenizer, self.max_length)
+        self.train_d = train_d
+        self.test_d = test_d
+        self.val_d = val_d
+
+    def setup(self, stage: str):
+        self.train_dataset = TweetDataset(self.train_d, self.tokenizer, self.max_length)
+        self.test_dataset = TweetDataset(self.test_d, self.tokenizer, self.max_length)
+        self.validation_dataset = TweetDataset(self.val_d, self.tokenizer, self.max_length)
 
     def train_dataloader(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.batch_size,
+            shuffle=True,
+            num_workers=self.num_workers
+        )
 
     def test_dataloader(self):
-        return DataLoader(self.test_dataset, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(
+            self.test_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers
+        )
 
     def val_dataloader(self):
-        return DataLoader(self.validation_dataset, batch_size=self.batch_size, shuffle=True)
+        return DataLoader(
+            self.validation_dataset,
+            batch_size=self.batch_size,
+            shuffle=False,
+            num_workers=self.num_workers
+        )
 
 
 if __name__ == "__main__":
