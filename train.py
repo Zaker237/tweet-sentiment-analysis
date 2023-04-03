@@ -21,6 +21,9 @@ cls = SentimentAnalysis(
     lr=LEARNING_RATE
 )
 
+for param in cls.bert.parameters():
+    param.requires_grad = False
+
 data = TweetDataModule(
     data_path=DATA_PATH,
     bert_model=BERT_MODEL,
